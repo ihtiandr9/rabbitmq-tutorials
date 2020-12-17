@@ -27,7 +27,7 @@ class FibonacciRpcClient(object):
         self.response = None
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_publish(
-            exchange='',
+            exchange='rpc_example_exch',
             routing_key='rpc_queue',
             properties=pika.BasicProperties(
                 reply_to=self.callback_queue,
