@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import pika
 
+cred = pika.PlainCredentials(username='user',password='123')
 connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='ihtiandr9.fvds.ru'))
+    pika.ConnectionParameters(host='ihtiandr9.fvds.ru',credentials=cred))
 channel = connection.channel()
 
 channel.queue_declare(queue='glass',durable=True)
