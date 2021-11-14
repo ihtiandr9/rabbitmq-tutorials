@@ -35,15 +35,13 @@ $callback = function ($req) {
         '',
         $req->get('reply_to')
     );
-    $req->delivery_info['channel']->basic_ack(
-        $req->delivery_info['delivery_tag']
-    );
+    $req->ack();
 };
 
 $channel->basic_qos(null, 1, null);
 $channel->basic_consume('rpc_queue', '', false, false, false, false, $callback);
 
-while ($channel->is_consuming()) {
+while ($channel->is_open()) {
     $channel->wait();
 }
 
