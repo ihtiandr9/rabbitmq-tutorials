@@ -1,14 +1,16 @@
 package main
 
 import (
+	"context"
 	"log"
+	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
+		log.Panicf("%s: %s", msg, err)
 	}
 }
 
@@ -52,7 +54,7 @@ func main() {
 	publish(ch, q.Name, "hello")
 
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
-	forever := make(chan bool)
+	var forever chan struct{}
 	<-forever
 }
 
@@ -76,7 +78,9 @@ func consume(ch *amqp.Channel, qName string) {
 }
 
 func publish(ch *amqp.Channel, qName, text string) {
-	err := ch.Publish("", qName, false, false, amqp.Publishing{
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := ch.PublishWithContext(ctx, "", qName, false, false, amqp.Publishing{
 		ContentType: "text/plain",
 		Body:        []byte(text),
 	})
